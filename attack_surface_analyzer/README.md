@@ -104,8 +104,6 @@ The engine runs in multiple automated phases:
 
 ## 📸 Sample Assessments (DVWA & Test Targets)
 
-## 📸 Sample Assessments (DVWA & Test Targets)
-
 **DVWA Target Environment**  
 This intentionally vulnerable web application (Damn Vulnerable Web App) was used to validate the scanner in a controlled and legal security-testing environment. It simulates real-world web application flaws for training and research.
 
@@ -154,6 +152,7 @@ This matches the format used by:
 - Pentest consulting firms  
 
 ---
+
 
 
 
