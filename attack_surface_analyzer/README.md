@@ -109,28 +109,28 @@ This intentionally vulnerable web application (Damn Vulnerable Web App) was used
 
 <div style="margin-bottom:40px">
 <img width="2516" height="1173" alt="Screenshot 2026-01-11 191359" src="https://github.com/user-attachments/assets/6d3495a2-7887-46c1-8733-8f41223bc587" />
-</div>
+</div><br><br>
 
 **Automated Vulnerability Discovery & Risk Scoring**  
 The engine identified multiple SQL Injection, XSS, and IDOR vulnerabilities and automatically classified them into CRITICAL, HIGH, MEDIUM, and LOW risk categories based on exploitability and impact.
 
 <div style="margin-bottom:40px">
 <img width="920" height="1081" alt="Screenshot 2026-01-11 191525" src="https://github.com/user-attachments/assets/88a56d00-b753-4727-8075-90eeefd30624" />
-</div>
+</div><br><br>
 
 **Exploit Proof with Payloads & Server Evidence**  
 Every finding is backed by the exact payload used and the server response confirming the vulnerability, eliminating false positives and providing reproducible proof of exploitation.
 
 <div style="margin-bottom:40px">
 <img width="1276" height="808" alt="Screenshot 2026-01-11 191803" src="https://github.com/user-attachments/assets/d658d9cb-258c-4ab5-a33e-1cfde239193d" />
-</div>
+</div><br><br>
 
 **Live Exploit Engine in Action**  
 The scanner actively fuzzes parameters, injects payloads, detects vulnerabilities, and validates access-control flaws in real time using a multithreaded attack pipeline.
 
 <div style="margin-bottom:40px">
 <img width="829" height="362" alt="Screenshot 2026-01-11 191850" src="https://github.com/user-attachments/assets/daa87261-175a-4763-ab20-b04caa19a2b0" />
-</div>
+</div><br><br>
 
 
 ## 📄 Example Output
@@ -152,6 +152,7 @@ This matches the format used by:
 - Pentest consulting firms  
 
 ---
+
 
 
 
