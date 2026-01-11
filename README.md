@@ -113,13 +113,13 @@ The engine runs in multiple automated phases:
    - `pentest_report.pdf`  
    containing vulnerabilities, payloads, evidence, and severity.
 
-## 📸 Sample Assessments (Hakhub Vulnerable Lab)
+## 📸 Sample Assessments (bWAPP – HackHub Vulnerable Lab)
 
-**Hakhub Target Environment**  
-Hakhub is a deliberately vulnerable web-application lab designed for ethical hacking, bug bounty training, and security research.  
-It provides realistic authentication flows, user input points, and business-logic flaws for safe exploitation.
+**bWAPP (Buggy Web Application) on HackHub**  
+bWAPP is a deliberately vulnerable web application hosted on HackHub, designed for ethical hacking, security training, and vulnerability research.  
+It exposes realistic authentication flows, user-controlled inputs, and business-logic flaws for safe exploitation.
 
-All scans, payloads, and exploits shown below were performed against Hakhub in a controlled and legal testing environment.
+All scans, payloads, and exploits shown below were performed against **bwapp.hackhub.net** in a controlled and authorized testing environment.
 
 <div style="margin-bottom:40px">
 <img width="2516" height="1173" alt="Screenshot 2026-01-11 191359" src="https://github.com/user-attachments/assets/6d3495a2-7887-46c1-8733-8f41223bc587" />
