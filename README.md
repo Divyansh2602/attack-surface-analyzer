@@ -167,7 +167,51 @@ This matches the format used by:
 
 ---
 
+## 🛠 How to Run
 
+### 1️⃣ Install dependencies
+```bash
+pip install requests beautifulsoup4 reportlab
+
+Run the scanner
+python main.py <target_url>
+Example:
+python main.py https://hakhub.net
+
+View results
+report.html
+pentest_report.pdf
+
+Open them in your browser or PDF viewer to see:
+
+Vulnerabilities
+
+Payloads
+
+Evidence
+
+Risk levels
+
+```
+
+---
+
+## 🧭 Roadmap
+
+```md
+## 🧭 Roadmap
+
+Planned enhancements for this engine include:
+
+- 🔐 Authenticated scanning (login & session handling)  
+- 🧠 CSRF & CORS misconfiguration detection  
+- 📡 API & JWT vulnerability testing  
+- 📊 Graphs and severity charts in reports  
+- ⚡ Distributed & cloud-based scanning  
+- 🛑 Rate-limit & WAF detection  
+- 📂 JSON & SIEM export  
+
+The goal is to evolve this into a **full-scale offensive web security platform**.
 
 
 
