@@ -113,10 +113,13 @@ The engine runs in multiple automated phases:
    - `pentest_report.pdf`  
    containing vulnerabilities, payloads, evidence, and severity.
 
-## 📸 Sample Assessments (DVWA & Test Targets)
+## 📸 Sample Assessments (Hakhub Vulnerable Lab)
 
-**DVWA Target Environment**  
-This intentionally vulnerable web application (Damn Vulnerable Web App) was used to validate the scanner in a controlled and legal security-testing environment. It simulates real-world web application flaws for training and research.
+**Hakhub Target Environment**  
+Hakhub is a deliberately vulnerable web-application lab designed for ethical hacking, bug bounty training, and security research.  
+It provides realistic authentication flows, user input points, and business-logic flaws for safe exploitation.
+
+All scans, payloads, and exploits shown below were performed against Hakhub in a controlled and legal testing environment.
 
 <div style="margin-bottom:40px">
 <img width="2516" height="1173" alt="Screenshot 2026-01-11 191359" src="https://github.com/user-attachments/assets/6d3495a2-7887-46c1-8733-8f41223bc587" />
