@@ -7,8 +7,6 @@
 ![Status](https://img.shields.io/badge/Status-Production%20Ready-green)
 
 ---
-<img width="527" height="282" alt="image" src="https://github.com/user-attachments/assets/2b7d9892-b19f-474d-8e32-52d0f36b44a1" />
-
 
 ## 🛡 What is this?
 
@@ -104,6 +102,13 @@ The engine runs in multiple automated phases:
    - `pentest_report.pdf`  
    containing vulnerabilities, payloads, evidence, and severity.
 
+## 📸 Sample Assessments (DVWA & Test Targets)
+
+<img width="2516" height="1173" alt="Screenshot 2026-01-11 191359" src="https://github.com/user-attachments/assets/6d3495a2-7887-46c1-8733-8f41223bc587" />
+<img width="920" height="1081" alt="Screenshot 2026-01-11 191525" src="https://github.com/user-attachments/assets/88a56d00-b753-4727-8075-90eeefd30624" />
+<img width="1276" height="808" alt="Screenshot 2026-01-11 191803" src="https://github.com/user-attachments/assets/d658d9cb-258c-4ab5-a33e-1cfde239193d" />
+<img width="829" height="362" alt="Screenshot 2026-01-11 191850" src="https://github.com/user-attachments/assets/daa87261-175a-4763-ab20-b04caa19a2b0" />
+
 
 ## 📄 Example Output
 
@@ -124,5 +129,6 @@ This matches the format used by:
 - Pentest consulting firms  
 
 ---
+
 
 
