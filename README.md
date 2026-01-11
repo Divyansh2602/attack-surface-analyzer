@@ -176,7 +176,7 @@ pip install requests beautifulsoup4 reportlab
 2️⃣ Run the scanner
 python main.py <target_url>
 Example:
-python main.py https://hakhub.net
+python main.py https://bwapp.hakhub.net
 
 3️⃣ View results
 report.html
