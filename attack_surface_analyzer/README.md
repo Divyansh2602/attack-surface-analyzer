@@ -104,16 +104,23 @@ The engine runs in multiple automated phases:
 
 ## 📸 Sample Assessments (DVWA & Test Targets)
 
+## 📸 Sample Assessments (DVWA & Test Targets)
+
+<div style="margin-bottom:40px">
 <img width="2516" height="1173" alt="Screenshot 2026-01-11 191359" src="https://github.com/user-attachments/assets/6d3495a2-7887-46c1-8733-8f41223bc587" />
+</div>
 
-
+<div style="margin-bottom:40px">
 <img width="920" height="1081" alt="Screenshot 2026-01-11 191525" src="https://github.com/user-attachments/assets/88a56d00-b753-4727-8075-90eeefd30624" />
+</div>
 
-
+<div style="margin-bottom:40px">
 <img width="1276" height="808" alt="Screenshot 2026-01-11 191803" src="https://github.com/user-attachments/assets/d658d9cb-258c-4ab5-a33e-1cfde239193d" />
+</div>
 
-
+<div style="margin-bottom:40px">
 <img width="829" height="362" alt="Screenshot 2026-01-11 191850" src="https://github.com/user-attachments/assets/daa87261-175a-4763-ab20-b04caa19a2b0" />
+</div>
 
 
 ## 📄 Example Output
@@ -135,6 +142,7 @@ This matches the format used by:
 - Pentest consulting firms  
 
 ---
+
 
 
 
