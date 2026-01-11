@@ -195,8 +195,6 @@ Risk levels
 
 ```
 
----
-
 ## 🧭 Roadmap
 
 Planned enhancements for this engine include:
