@@ -172,7 +172,7 @@ This matches the format used by:
 ### 1️⃣ Install dependencies
 ```bash
 pip install requests beautifulsoup4 reportlab
-
+```
 2️⃣ Run the scanner
 python main.py <target_url>
 Example:
@@ -182,7 +182,6 @@ python main.py https://hakhub.net
 report.html
 pentest_report.pdf
 
-```
 
 Open them in your browser or PDF viewer to see:
 
