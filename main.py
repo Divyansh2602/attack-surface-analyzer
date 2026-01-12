@@ -1,3 +1,10 @@
+# ===================================================
+# Web Application Attack Surface Analyzer
+# Author: Divyansh Gupta
+# © 2026 Divyansh Gupta
+# GitHub: https://github.com/Divyansh2602
+# ===================================================
+
 from recon.basic_recon import basic_recon
 from crawler.endpoint_crawler import EndpointCrawler
 from analyzer.js_endpoint_extractor import JSEndpointExtractor

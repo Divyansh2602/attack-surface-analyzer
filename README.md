@@ -209,6 +209,13 @@ Planned enhancements for this engine include:
 
 The goal is to evolve this into a **full-scale offensive web security platform**.
 
+## Author
+Divyansh Gupta  
+Cybersecurity & Offensive Security Developer  
+
+This project is protected under the MIT License.  
+Any reuse must preserve original authorship.
+
 
 
 
