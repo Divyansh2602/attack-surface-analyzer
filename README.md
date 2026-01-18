@@ -48,7 +48,7 @@ This is a **vulnerability exploitation engine**.
 
 ## 🧠 Attack Pipeline
 
-
+```
 Target Web App
 │
 ▼
@@ -74,7 +74,7 @@ Target Web App
 │
 ▼
 [ HTML & PDF Pentest Reports ]
-
+```
 Every vulnerability is backed by **real payloads and server responses**, not guesses.
 
 ## 🧠 How it works
