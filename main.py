@@ -1,147 +1,324 @@
 # ===================================================
-# Web Application Attack Surface Analyzer
+# CivicShield AI – API Layer
 # Author: Divyansh Gupta
-# © 2026 Divyansh Gupta
-# GitHub: https://github.com/Divyansh2602
 # ===================================================
 
-from recon.basic_recon import basic_recon
-from crawler.endpoint_crawler import EndpointCrawler
-from analyzer.js_endpoint_extractor import JSEndpointExtractor
-from analyzer.surface_mapper import AttackSurfaceMapper
-from analyzer.parameter_discovery import ParameterDiscovery
-from analyzer.vulnerability_scanner import VulnerabilityScanner
-from analyzer.parameter_fuzzer import ParameterFuzzer
-from analyzer.risk_engine import RiskEngine
-from analyzer.report_generator import ReportGenerator
-from analyzer.idor_scanner import IDORScanner
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Depends, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pydantic import BaseModel
+from datetime import datetime, timedelta
+import os
+from sqlalchemy import func
+
+from analyzer.phishing_detector import PhishingDetector
+from analyzer.engine import run_scan
 from analyzer.pdf_report_generator import PDFReportGenerator
 
-import sys
+from database.db import engine, SessionLocal
+from database.models import Base, Scan, Vulnerability, User
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <target_url>")
-        sys.exit(1)
+from api.auth import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    verify_token
+)
 
-    target = sys.argv[1]
+# ===================================================
+# DB Init
+# ===================================================
+Base.metadata.create_all(bind=engine)
 
-    # =========================
-    # Phase 1 — Recon
-    # =========================
-    basic_recon(target)
+# ===================================================
+# FastAPI App
+# ===================================================
+app = FastAPI(title="CivicShield AI")
 
-    # =========================
-    # Phase 2 — Crawl
-    # =========================
-    crawler = EndpointCrawler(target)
-    html_endpoints = crawler.crawl()
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-    # =========================
-    # Phase 3 — JS Mining
-    # =========================
-    js_extractor = JSEndpointExtractor(target)
-    js_endpoints = js_extractor.run(html_endpoints)
+scan_store = {}
 
-    # =========================
-    # Phase 4 — Surface Mapping
-    # =========================
-    mapper = AttackSurfaceMapper()
-    surface = mapper.correlate(html_endpoints, js_endpoints)
+# ===================================================
+# MODELS
+# ===================================================
+class ScanRequest(BaseModel):
+    target: str
 
-    # =========================
-    # Phase 5 — Parameter Fuzzing
-    # =========================
-    fuzzer = ParameterFuzzer()
-    fuzzed_urls = fuzzer.generate(surface.keys())
+# ===================================================
+# ROOT
+# ===================================================
+@app.get("/")
+def root():
+    return {"message": "CivicShield AI API Running"}
 
-    # =========================
-    # Phase 6 — Parameter Discovery
-    # =========================
-    param_finder = ParameterDiscovery()
-    params = param_finder.run(fuzzed_urls)
+# ===================================================
+# DASHBOARD
+# ===================================================
+@app.get("/dashboard")
+def dashboard(request: Request):
 
-    # =========================
-    # Phase 7 — Exploit Scanning
-    # =========================
-    scanner = VulnerabilityScanner()
-    idor = IDORScanner()
-    risk_engine = RiskEngine()
-    html_report = ReportGenerator()
-    pdf_report = PDFReportGenerator()
+    db = SessionLocal()
 
-    findings_list = []
-    seen = set()  # 🔥 DEDUPLICATION SET
+    try:
+        # -------------------------------
+        # BASIC COUNTS
+        # -------------------------------
+        total_scans = db.query(Scan).count()
+        total_vulns = db.query(Vulnerability).count()
 
-    scan_results = scanner.test(params)
+        critical_risk = db.query(Vulnerability).filter(
+            func.lower(Vulnerability.risk) == "critical"
+        ).count()
 
-    print("\n====== EXPLOIT REPORT ======\n")
+        high_risk = db.query(Vulnerability).filter(
+            func.lower(Vulnerability.risk) == "high"
+        ).count()
 
-    for url, findings in scan_results.items():
-        for vuln, param, payload, evidence in findings:
-            base_url = url.split("?")[0]
-            ep_risk = surface.get(base_url, {"risk": "LOW"})["risk"]
+        medium_risk = db.query(Vulnerability).filter(
+            func.lower(Vulnerability.risk) == "medium"
+        ).count()
 
-            score = risk_engine.score(ep_risk, vuln)
-            final_risk = risk_engine.label(score)
+        # -------------------------------
+        # IMPROVED WEIGHTED RISK SCORE
+        # -------------------------------
+        critical_weight = 5
+        high_weight = 3
+        medium_weight = 1
 
-            key = (final_risk, vuln, url, param)
-            if key in seen:
-                continue
-            seen.add(key)
+        raw_score = (
+            critical_risk * critical_weight +
+            high_risk * high_weight +
+            medium_risk * medium_weight
+        )
 
-            findings_list.append({
-                "risk": final_risk,
-                "vuln": vuln,
-                "url": url,
-                "param": param,
-                "payload": payload,
-                "evidence": evidence
-            })
+        max_possible = total_vulns * critical_weight if total_vulns > 0 else 1
 
-            print(f"[{final_risk}] {vuln} on '{param}'")
-            print(f"URL: {url}")
-            print(f"Payload: {payload}")
-            print(f"Evidence: {evidence}\n")
+        risk_score = int((raw_score / max_possible) * 100)
+        risk_score = min(risk_score, 100)
 
-    # =========================
-    # Phase 8 — IDOR Detection
-    # =========================
-    print("\n====== IDOR REPORT ======\n")
+        if risk_score >= 75:
+            risk_label = "CRITICAL"
+            risk_color = "danger"
+        elif risk_score >= 50:
+            risk_label = "HIGH"
+            risk_color = "warning"
+        elif risk_score >= 25:
+            risk_label = "MEDIUM"
+            risk_color = "info"
+        else:
+            risk_label = "LOW"
+            risk_color = "success"
 
-    for url, p in params.items():
-        idor_findings = idor.test(url, p)
+        # -------------------------------
+        # LAST 7 DAYS TREND (NO GAPS)
+        # -------------------------------
+        trend_labels = []
+        trend_counts = []
 
-        for f in idor_findings:
-            key = ("CRITICAL", "IDOR", url, f["param"])
-            if key in seen:
-                continue
-            seen.add(key)
+        today = datetime.utcnow().date()
 
-            findings_list.append({
-                "risk": "CRITICAL",
-                "vuln": "IDOR",
-                "url": url,
-                "param": f["param"],
-                "payload": f"{f['from']} -> {f['to']}",
-                "evidence": f["evidence"]
-            })
+        for i in range(6, -1, -1):
+            day = today - timedelta(days=i)
 
-            print("[CRITICAL] IDOR detected")
-            print(f"URL: {url}")
-            print(f"Parameter: {f['param']}")
-            print(f"Changed: {f['from']} -> {f['to']}")
-            print(f"Evidence: {f['evidence']}\n")
+            count = db.query(Scan).filter(
+                func.date(Scan.created_at) == day
+            ).count()
 
-    # =========================
-    # Phase 9 — Reports
-    # =========================
-    html_report.generate(target, findings_list)
-    pdf_report.generate(target, findings_list)
+            trend_labels.append(day.strftime("%Y-%m-%d"))
+            trend_counts.append(count)
 
-    print("\n====== ATTACK SURFACE MAP ======")
-    for ep, meta in surface.items():
-        print(f"[{meta['risk']}] {ep}")
+        # -------------------------------
+        # LATEST 10 VULNERABILITIES
+        # -------------------------------
+        latest_vulns = (
+            db.query(Vulnerability)
+            .order_by(Vulnerability.id.desc())
+            .limit(10)
+            .all()
+        )
 
-if __name__ == "__main__":
-    main()
+        vuln_list = [
+            {
+                "risk": v.risk,
+                "type": v.vuln_type,
+                "url": v.url,
+                "param": v.param
+            }
+            for v in latest_vulns
+        ]
+
+        return templates.TemplateResponse(
+            "dashboard.html",
+            {
+                "request": request,
+                "total_scans": total_scans,
+                "total_vulns": total_vulns,
+                "critical_risk": critical_risk,
+                "high_risk": high_risk,
+                "medium_risk": medium_risk,
+                "trend_labels": trend_labels,
+                "trend_counts": trend_counts,
+                "vuln_list": vuln_list,
+                "risk_score": risk_score,
+                "risk_label": risk_label,
+                "risk_color": risk_color
+            }
+        )
+
+    finally:
+        db.close()
+
+# ===================================================
+# REGISTER
+# ===================================================
+@app.post("/register")
+def register(username: str, password: str):
+
+    db = SessionLocal()
+
+    if db.query(User).filter(User.username == username).first():
+        db.close()
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    user = User(
+        username=username,
+        password_hash=hash_password(password)
+    )
+
+    db.add(user)
+    db.commit()
+    db.close()
+
+    return {"message": "User registered successfully"}
+
+# ===================================================
+# LOGIN
+# ===================================================
+@app.post("/login")
+def login(username: str, password: str):
+
+    db = SessionLocal()
+
+    user = db.query(User).filter(User.username == username).first()
+
+    if not user or not verify_password(password, user.password_hash):
+        db.close()
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    token = create_access_token({"sub": user.username})
+    db.close()
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
+
+# ===================================================
+# PHISHING CHECK
+# ===================================================
+@app.post("/phishing/check")
+def check_phishing(url: str, user: dict = Depends(verify_token)):
+
+    if not url.startswith("http"):
+        raise HTTPException(status_code=400, detail="Invalid URL format")
+
+    detector = PhishingDetector()
+    return detector.analyze(url)
+
+# ===================================================
+# BACKGROUND SCAN
+# ===================================================
+def background_scan(scan_id: int, target: str):
+
+    db = SessionLocal()
+
+    try:
+        scan_store[scan_id]["status"] = "running"
+
+        db_scan = Scan(target_url=target, status="running")
+        db.add(db_scan)
+        db.commit()
+        db.refresh(db_scan)
+
+        result = run_scan(target)
+
+        db_scan.status = "completed"
+        db.commit()
+
+        for finding in result["findings"]:
+            vuln = Vulnerability(
+                scan_id=db_scan.id,
+                risk=finding["risk"],
+                vuln_type=finding["vuln"],
+                url=finding["url"],
+                param=finding["param"],
+                payload=finding["payload"],
+                evidence=finding["evidence"]
+            )
+            db.add(vuln)
+
+        db.commit()
+
+        scan_store[scan_id]["status"] = "completed"
+        scan_store[scan_id]["result"] = result
+
+    except Exception as e:
+        scan_store[scan_id]["status"] = "failed"
+        scan_store[scan_id]["error"] = str(e)
+
+    finally:
+        db.close()
+
+# ===================================================
+# START SCAN
+# ===================================================
+@app.post("/scan")
+def start_scan(
+    request: ScanRequest,
+    background_tasks: BackgroundTasks,
+    user: dict = Depends(verify_token)
+):
+
+    if not request.target.startswith("http"):
+        raise HTTPException(status_code=400, detail="Invalid URL format")
+
+    scan_id = len(scan_store) + 1
+
+    scan_store[scan_id] = {
+        "status": "queued",
+        "result": None,
+        "error": None
+    }
+
+    background_tasks.add_task(background_scan, scan_id, request.target)
+
+    return {"scan_id": scan_id, "status": "queued"}
+
+# ===================================================
+# REPORT
+# ===================================================
+@app.get("/report/{scan_id}")
+def generate_report(scan_id: int, user: dict = Depends(verify_token)):
+
+    if scan_id not in scan_store:
+        raise HTTPException(status_code=404, detail="Scan ID not found")
+
+    if scan_store[scan_id]["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Scan not completed yet")
+
+    data = scan_store[scan_id]["result"]
+
+    pdf = PDFReportGenerator()
+    pdf.generate(data["target"], data["findings"])
+
+    if not os.path.exists("pentest_report.pdf"):
+        raise HTTPException(status_code=500, detail="Report generation failed")
+
+    return FileResponse(
+        path="pentest_report.pdf",
+        media_type="application/pdf",
+        filename=f"report_{scan_id}.pdf"
+    )
