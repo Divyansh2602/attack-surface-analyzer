@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import os
+import threading
 from sqlalchemy import func
 
 from analyzer.phishing_detector import PhishingDetector
@@ -40,12 +41,20 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 scan_store = {}
+scan_id_lock = threading.Lock()
+scan_id_counter = 0
+report_lock = threading.Lock()
 
 # ===================================================
 # MODELS
 # ===================================================
 class ScanRequest(BaseModel):
     target: str
+
+
+class AuthRequest(BaseModel):
+    username: str
+    password: str
 
 # ===================================================
 # ROOT
@@ -175,17 +184,17 @@ def dashboard(request: Request):
 # REGISTER
 # ===================================================
 @app.post("/register")
-def register(username: str, password: str):
+def register(request: AuthRequest):
 
     db = SessionLocal()
 
-    if db.query(User).filter(User.username == username).first():
+    if db.query(User).filter(User.username == request.username).first():
         db.close()
         raise HTTPException(status_code=400, detail="User already exists")
 
     user = User(
-        username=username,
-        password_hash=hash_password(password)
+        username=request.username,
+        password_hash=hash_password(request.password)
     )
 
     db.add(user)
@@ -198,13 +207,13 @@ def register(username: str, password: str):
 # LOGIN
 # ===================================================
 @app.post("/login")
-def login(username: str, password: str):
+def login(request: AuthRequest):
 
     db = SessionLocal()
 
-    user = db.query(User).filter(User.username == username).first()
+    user = db.query(User).filter(User.username == request.username).first()
 
-    if not user or not verify_password(password, user.password_hash):
+    if not user or not verify_password(request.password, user.password_hash):
         db.close()
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -285,7 +294,10 @@ def start_scan(
     if not request.target.startswith("http"):
         raise HTTPException(status_code=400, detail="Invalid URL format")
 
-    scan_id = len(scan_store) + 1
+    global scan_id_counter
+    with scan_id_lock:
+        scan_id_counter += 1
+        scan_id = scan_id_counter
 
     scan_store[scan_id] = {
         "status": "queued",
@@ -296,6 +308,27 @@ def start_scan(
     background_tasks.add_task(background_scan, scan_id, request.target)
 
     return {"scan_id": scan_id, "status": "queued"}
+
+# ===================================================
+# SCAN STATUS
+# ===================================================
+@app.get("/scan/{scan_id}")
+def scan_status(scan_id: int, user: dict = Depends(verify_token)):
+
+    if scan_id not in scan_store:
+        raise HTTPException(status_code=404, detail="Scan ID not found")
+
+    scan_data = scan_store[scan_id]
+    response = {
+        "scan_id": scan_id,
+        "status": scan_data["status"],
+        "error": scan_data["error"]
+    }
+
+    if scan_data["status"] == "completed":
+        response["result"] = scan_data["result"]
+
+    return response
 
 # ===================================================
 # REPORT
@@ -311,14 +344,17 @@ def generate_report(scan_id: int, user: dict = Depends(verify_token)):
 
     data = scan_store[scan_id]["result"]
 
-    pdf = PDFReportGenerator()
-    pdf.generate(data["target"], data["findings"])
+    report_filename = f"pentest_report_{scan_id}.pdf"
+    with report_lock:
+        pdf = PDFReportGenerator()
+        pdf.generate(data["target"], data["findings"])
 
-    if not os.path.exists("pentest_report.pdf"):
-        raise HTTPException(status_code=500, detail="Report generation failed")
+        if not os.path.exists("pentest_report.pdf"):
+            raise HTTPException(status_code=500, detail="Report generation failed")
+        os.replace("pentest_report.pdf", report_filename)
 
     return FileResponse(
-        path="pentest_report.pdf",
+        path=report_filename,
         media_type="application/pdf",
         filename=f"report_{scan_id}.pdf"
     )
