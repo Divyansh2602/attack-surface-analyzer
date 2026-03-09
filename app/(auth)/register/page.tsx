@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/button'
 import { useAuthStore } from '@/lib/store'
 import { authAPI } from '@/lib/api'
 
-export default function RegisterPage() {
+function RegisterFormContent() {
   const router = useRouter()
   const { setAuth } = useAuthStore()
   
@@ -138,5 +138,17 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    }>
+      <RegisterFormContent />
+    </Suspense>
   )
 }
