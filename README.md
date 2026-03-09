@@ -1,10 +1,19 @@
+🚀 CivicShield AI
+
 AI-Powered Cyber Resilience Platform
 
 ⸻
 
 🔥 Overview
 
-CivicShield AI is an intelligent cyber security platform designed to: • 🔍 Detect vulnerabilities (SQLi, XSS, Injection flaws) • 🎯 Perform attack surface analysis • 🛡️ Detect phishing threats • 📊 Calculate real-time Cyber Risk Score • 📈 Provide executive security dashboard • 📄 Generate professional PDF pentest reports • 🔐 Secure APIs with JWT authentication
+CivicShield AI is an intelligent cyber security platform designed to:
+	•	🔍 Detect vulnerabilities (SQLi, XSS, Injection flaws)
+	•	🎯 Perform attack surface analysis
+	•	🛡️ Detect phishing threats
+	•	📊 Calculate real-time Cyber Risk Score
+	•	📈 Provide executive security dashboard
+	•	📄 Generate professional PDF pentest reports
+	•	🔐 Secure APIs with JWT authentication
 
 It transforms raw scan data into actionable intelligence.
 
@@ -14,12 +23,16 @@ It transforms raw scan data into actionable intelligence.
 
 Traditional scanners dump findings.
 
-CivicShield AI: • Prioritizes risk • Quantifies impact • Visualizes threat trends • Converts technical findings into executive insights
+CivicShield AI:
+	•	Prioritizes risk
+	•	Quantifies impact
+	•	Visualizes threat trends
+	•	Converts technical findings into executive insights
 
 Built for modern cyber defense.
 
 ⸻
-
+```
 🏗️ System Architecture
 flowchart TD
 
@@ -38,6 +51,8 @@ Database --> Dashboard
 Database --> ReportGenerator
 
 ReportGenerator --> PDFReport
+```
+```
 🧩 Internal Architecture
 
 flowchart LR
@@ -67,43 +82,88 @@ A --> E
 E --> H
 A --> F
 F --> H
-WhatsApp Image 2026-02-28 at 12 41 26
+```
+![WhatsApp Image 2026-02-28 at 12 41 26](https://github.com/user-attachments/assets/d6869d39-ee2f-4572-a371-089626649cf5)
+
 
 📊 Dashboard Intelligence Flow
 
-sequenceDiagram participant User participant FastAPI participant Database participant RiskEngine participant ChartJS
+sequenceDiagram
+    participant User
+    participant FastAPI
+    participant Database
+    participant RiskEngine
+    participant ChartJS
 
-User->>FastAPI: GET /dashboard
-FastAPI->>Database: Fetch scan + vuln data
-Database-->>FastAPI: Data
-FastAPI->>RiskEngine: Calculate risk score
-RiskEngine-->>FastAPI: Score + Label
-FastAPI-->>User: Render dashboard.html
-User->>ChartJS: Render charts
-image
+    User->>FastAPI: GET /dashboard
+    FastAPI->>Database: Fetch scan + vuln data
+    Database-->>FastAPI: Data
+    FastAPI->>RiskEngine: Calculate risk score
+    RiskEngine-->>FastAPI: Score + Label
+    FastAPI-->>User: Render dashboard.html
+    User->>ChartJS: Render charts
+
+<img width="2559" height="1152" alt="image" src="https://github.com/user-attachments/assets/f61b1d06-4143-4693-b836-c0d8214016dd" />
+
+
 ⚙️ Tech Stack
 
-Layer Technology Backend FastAPI Database SQLAlchemy + SQLite Auth JWT + bcrypt Visualization Bootstrap + Chart.js Reporting Custom PDF Generator Security Custom Scan Engine
+Layer
+Technology
+Backend
+FastAPI
+Database
+SQLAlchemy + SQLite
+Auth
+JWT + bcrypt
+Visualization
+Bootstrap + Chart.js
+Reporting
+Custom PDF Generator
+Security
+Custom Scan Engine
+
 
 🛡️ Core Features
 
-✅ Automated Scan Engine • SQL Injection Detection • XSS Detection • Parameter Fuzzing • Endpoint Discovery
+✅ Automated Scan Engine
+	•	SQL Injection Detection
+	•	XSS Detection
+	•	Parameter Fuzzing
+	•	Endpoint Discovery
 
-✅ Phishing Detection • URL heuristic analysis • Suspicious pattern detection
+✅ Phishing Detection
+	•	URL heuristic analysis
+	•	Suspicious pattern detection
 
 ✅ Risk Scoring Engine
 
 Weighted severity model:
 
-Critical × 10 High × 6 Medium × 3 Normalized to 0–100
+Critical × 10
+High × 6
+Medium × 3
+Normalized to 0–100
 
-✅ Executive Dashboard • Risk distribution pie chart • 7-day scan trend • Latest vulnerabilities • Dynamic risk score • Auto-refresh
+✅ Executive Dashboard
+	•	Risk distribution pie chart
+	•	7-day scan trend
+	•	Latest vulnerabilities
+	•	Dynamic risk score
+	•	Auto-refresh
 
-image image
-✅ PDF Report Generator • Target summary • Findings • Risk breakdown • Professional formatting
+<img width="1171" height="1033" alt="image" src="https://github.com/user-attachments/assets/02fd33bb-e7ca-4b27-b6ad-5ca0c3ef290d" />
+<img width="1086" height="771" alt="image" src="https://github.com/user-attachments/assets/bded3bb5-ec7a-474f-a5f6-436a8319425b" />
+
+
+✅ PDF Report Generator
+	•	Target summary
+	•	Findings
+	•	Risk breakdown
+	•	Professional formatting
 
 ⸻
-
+```
 📂 Project Structure
 
 attack_surface_analyzer/
@@ -127,6 +187,8 @@ attack_surface_analyzer/
 ├── static/
 │
 └── README.md
+```
+```
 🔐 API Endpoints
 
 Method
@@ -159,8 +221,9 @@ Scan results
 GET
 /report/{id}
 Generate PDF report
+```
 🧪 How to Run
-
+```
 git clone https://github.com/Divyansh2602/civicshield-ai.git
 cd civicshield-ai
 
@@ -172,8 +235,19 @@ pip install -r requirements.txt
 python -m uvicorn main:app --reload
 
 http://127.0.0.1:8000/dashboard
-📈 Example Risk Output • Critical: 138 • High: 378 • Medium: 338 • Risk Score: 50 / 100 (HIGH)
+```
+📈 Example Risk Output
+	•	Critical: 138
+	•	High: 378
+	•	Medium: 338
+	•	Risk Score: 50 / 100 (HIGH)
 
 Dynamic, normalized, realistic.
 
-🧠 Future Enhancements • AI-powered exploit prediction • CVSS scoring integration • Real-time WebSocket updates • Role-based access control • Threat intelligence feeds • Multi-tenant deployment
+🧠 Future Enhancements
+	•	AI-powered exploit prediction
+	•	CVSS scoring integration
+	•	Real-time WebSocket updates
+	•	Role-based access control
+	•	Threat intelligence feeds
+	•	Multi-tenant deployment
