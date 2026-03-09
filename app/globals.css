@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 10 14% 3%;
+  --foreground: 0 0% 98%;
+  
+  --card: 10 12% 8%;
+  --card-foreground: 0 0% 98%;
+  
+  --primary: 200 100% 50%;
+  --primary-foreground: 0 0% 0%;
+  
+  --secondary: 190 85% 45%;
+  --secondary-foreground: 0 0% 100%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --muted: 0 0% 42%;
+  --muted-foreground: 0 0% 68%;
+  
+  --accent: 0 100% 50%;
+  --accent-foreground: 0 0% 0%;
+  
+  --border: 0 0% 14%;
+  --input: 0 0% 12%;
+  --ring: 200 100% 50%;
+  
+  --radius: 0.5rem;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  button {
+    @apply transition-colors;
+  }
+  
+  input, textarea, select {
+    @apply bg-input text-foreground border border-border rounded-md px-3 py-2;
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
