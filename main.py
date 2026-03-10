@@ -4,9 +4,8 @@
 # ===================================================
 
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Depends, Request
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import os
@@ -37,8 +36,16 @@ Base.metadata.create_all(bind=engine)
 # ===================================================
 app = FastAPI(title="CivicShield AI")
 
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# ===================================================
+# CORS Configuration for Next.js Frontend
+# ===================================================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 scan_store = {}
 scan_id_lock = threading.Lock()
