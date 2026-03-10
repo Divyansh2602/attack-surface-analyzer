@@ -4,10 +4,10 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000"
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { scanId: string } }
+  { params }: { params: Promise<{ scanId: string }> }
 ) {
   try {
-    const scanId = params.scanId
+    const { scanId } = await params
 
     // Forward to Python backend
     const response = await fetch(`${BACKEND_URL}/scan/${scanId}`, {
